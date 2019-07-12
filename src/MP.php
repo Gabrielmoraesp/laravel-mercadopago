@@ -518,26 +518,8 @@ class MPRestClient {
             "response" => json_decode($api_result, true)
         );
 
-        if ($response['status'] >= 400) {
-            $message = $response['response']['message'];
-            if (isset ($response['response']['cause'])) {
-                if (isset ($response['response']['cause']['code']) && isset ($response['response']['cause']['description'])) {
-                    $message .= " - ".$response['response']['cause']['code'].': '.$response['response']['cause']['description'];
-                } else if (is_array ($response['response']['cause'])) {
-                    foreach ($response['response']['cause'] as $causes) {
-                          if(is_array($causes)) {
-                            foreach ($causes as $cause) {
-                              $message .= " - ".$cause['code'].': '.$cause['description'];
-                            }
-                          } else {
-                            $message .= " - ".$causes['code'].': '.$causes['description'];
-                          }
-                      }
-                }
-            }
-
-            throw new MercadoPagoException ($message, $response['status']);
-        }
+        if ($response['status'] >= 400)
+            return $response['response']['cause'];
 
         curl_close($connect);
 
